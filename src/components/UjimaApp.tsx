@@ -4,6 +4,8 @@ import {
   FormData, emptyForm, COUNTY_RISK, computeFeatures, rankBoundaries,
   dataQualityScore, computeScoring, tierFrom, nowEAT,
 } from "@/lib/ujima";
+import OfficerDashboard from "./OfficerDashboard";
+
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
