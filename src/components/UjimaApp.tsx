@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Check, Loader2, AlertTriangle, ShieldCheck, ShieldAlert, ArrowRight, Smartphone } from "lucide-react";
 import {
   FormData, emptyForm, COUNTY_RISK, computeFeatures, rankBoundaries,
-  dataQualityScore, computeScoring, tierFrom, nowEAT, guarantorsNum,
+  dataQualityScore, computeScoring, tierFrom, nowEAT,
 } from "@/lib/ujima";
 
 type Step = 1 | 2 | 3 | 4 | 5;
