@@ -550,14 +550,16 @@ function GuardianPanel({ form, onNext, timestamp, prevTs }: { form: FormData; on
   );
 }
 
-function SectionBlock({ active, loading, color, letter, title, children }: any) {
+function SectionBlock({ active, loading, color, letter, title, children }: { active: boolean; loading: boolean; color: "scout" | "guardian" | "hunter"; letter: string; title: string; children: React.ReactNode }) {
+  const bg = color === "scout" ? "bg-scout" : color === "guardian" ? "bg-guardian" : "bg-hunter";
+  const text = color === "scout" ? "text-scout" : color === "guardian" ? "text-guardian" : "text-hunter";
   return (
     <div className={`border rounded-xl p-5 transition-all ${active ? "bg-card" : "bg-muted/30 opacity-50"}`}>
       <div className="flex items-center gap-3 mb-2">
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white bg-${color}`}>{letter}</div>
+        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white ${bg}`}>{letter}</div>
         <h4 className="font-semibold">{title}</h4>
-        {active && <Check className={`w-4 h-4 text-${color}`} />}
-        {loading && <Loader2 className={`w-4 h-4 animate-spin text-${color}`} />}
+        {active && <Check className={`w-4 h-4 ${text}`} />}
+        {loading && <Loader2 className={`w-4 h-4 animate-spin ${text}`} />}
       </div>
       {active && <div>{children}</div>}
     </div>
