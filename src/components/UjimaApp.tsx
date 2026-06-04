@@ -644,7 +644,7 @@ function HunterPanel({ form, onNext }: { form: FormData; onNext: () => void }) {
   );
 }
 
-function PhoneFrame({ sms }: { sms: string; memberName: string }) {
+function PhoneFrame({ sms }: { sms: string; memberName?: string }) {
   return (
     <div className="w-[300px] rounded-[2rem] bg-foreground p-3 shadow-xl">
       <div className="rounded-[1.5rem] bg-background min-h-[420px] p-4 flex flex-col">
