@@ -89,6 +89,11 @@ export default function UjimaApp() {
     return <LoginScreen onLogin={handleLogin} />;
   }
 
+  if (auth.role === "officer") {
+    return <OfficerDashboard onLogout={logout} />;
+  }
+
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {auth.role === "officer" && (
