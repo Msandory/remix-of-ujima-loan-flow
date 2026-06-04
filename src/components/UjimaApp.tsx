@@ -20,14 +20,39 @@ const CHANNELS = ["USSD", "WhatsApp", "Branch Walk-in"];
 const COUNTIES = Object.keys(COUNTY_RISK);
 const GUARANTORS = ["0", "1", "2", "3+"];
 
+type Auth = { role: "member" | "officer"; id: string } | null;
+
 export default function UjimaApp() {
+  const [auth, setAuth] = useState<Auth>(null);
+  const [authLoading, setAuthLoading] = useState(false);
   const [step, setStep] = useState<Step>(1);
   const [form, setForm] = useState<FormData>(emptyForm);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [handoff, setHandoff] = useState<null | { color: string }>(null);
   const [timestamps, setTimestamps] = useState<Record<Step, string>>({} as any);
 
+  const handleLogin = (role: "member" | "officer", id: string) => {
+    setAuthLoading(true);
+    setTimeout(() => {
+      setAuth({ role, id });
+      if (role === "member") {
+        setForm(f => ({ ...f, memberId: id }));
+      }
+      setAuthLoading(false);
+      setTimestamps({ 1: nowEAT() } as any);
+    }, 1500);
+  };
+
   const reset = () => {
+    setStep(1);
+    setForm({ ...emptyForm, memberId: auth?.role === "member" ? auth.id : "" });
+    setErrors({});
+    setHandoff(null);
+    setTimestamps({ 1: nowEAT() } as any);
+  };
+
+  const logout = () => {
+    setAuth(null);
     setStep(1);
     setForm(emptyForm);
     setErrors({});
@@ -45,8 +70,22 @@ export default function UjimaApp() {
   };
 
   useEffect(() => {
-    if (step === 1 && !timestamps[1]) setTimestamps(t => ({ ...t, 1: nowEAT() }));
-  }, [step, timestamps]);
+    if (auth && step === 1 && !timestamps[1]) setTimestamps(t => ({ ...t, 1: nowEAT() }));
+  }, [auth, step, timestamps]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-scout flex flex-col items-center justify-center text-white p-6">
+        <Loader2 className="w-12 h-12 animate-spin mb-4" />
+        <p className="text-xl font-semibold">Authenticating...</p>
+        <p className="text-sm opacity-90 mt-1">Verifying consent records...</p>
+      </div>
+    );
+  }
+
+  if (!auth) {
+    return <LoginScreen onLogin={handleLogin} />;
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
