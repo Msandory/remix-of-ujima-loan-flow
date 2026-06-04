@@ -1,29 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
+import UjimaApp from "@/components/UjimaApp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "Ujima SACCO — AI Loan Approval Agent Simulator" },
+      { name: "description", content: "Simulator for Ujima SACCO's three-agent ethical AI loan approval pipeline: Scout, Guardian, Hunter." },
+      { property: "og:title", content: "Ujima SACCO — AI Loan Approval Agent Simulator" },
+      { property: "og:description", content: "Three-agent ethical AI loan approval pipeline for a Kenyan SACCO." },
     ],
   }),
-  component: Index,
+  component: UjimaApp,
 });
-
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
