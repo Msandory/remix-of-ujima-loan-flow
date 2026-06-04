@@ -782,3 +782,135 @@ function AuditPanel({ form, timestamps, onReset }: { form: FormData; timestamps:
     </div>
   );
 }
+
+/* ---------------- STEP 0 — LOGIN ---------------- */
+const DEMO_CREDS = {
+  member: { id: "UJ-2024-0042", secret: "1234" },
+  officer: { id: "KE-047", secret: "officer2024" },
+};
+
+function LoginScreen({ onLogin }: { onLogin: (role: "member" | "officer", id: string) => void }) {
+  const [role, setRole] = useState<"member" | "officer">("member");
+  const [id, setId] = useState("");
+  const [secret, setSecret] = useState("");
+  const [error, setError] = useState("");
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    const expect = DEMO_CREDS[role];
+    if (id.trim() === expect.id && secret === expect.secret) {
+      onLogin(role, id.trim());
+    } else {
+      setError("Incorrect credentials. Please try again.");
+    }
+  };
+
+  const switchRole = (r: "member" | "officer") => {
+    setRole(r);
+    setId("");
+    setSecret("");
+    setError("");
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      <div className="flex-1 flex items-center justify-center px-4 py-10">
+        <div className="w-full max-w-xl">
+          {/* Logo */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground">UJIMA SACCO</h1>
+            <div className="mx-auto mt-3 h-1 w-20 rounded-full bg-scout" />
+            <p className="mt-3 text-sm text-muted-foreground">Cooperative Finance. Community Trust.</p>
+          </div>
+
+          <div className="bg-card border rounded-2xl shadow-sm p-6 md:p-8">
+            <h2 className="text-lg font-semibold mb-4">Sign in to continue</h2>
+
+            {/* Role cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+              <RoleCard
+                active={role === "member"}
+                onClick={() => switchRole("member")}
+                title="Member Login"
+                desc="Apply for a loan or check your application status"
+              />
+              <RoleCard
+                active={role === "officer"}
+                onClick={() => switchRole("officer")}
+                title="Loan Officer Login"
+                desc="Review and process member applications"
+              />
+            </div>
+
+            <form onSubmit={submit} className="space-y-4">
+              {role === "member" ? (
+                <>
+                  <LoginField label="Member ID" placeholder="UJ-2024-XXXX" value={id} onChange={setId} />
+                  <LoginField label="PIN" placeholder="••••" type="password" inputMode="numeric" maxLength={4} value={secret} onChange={setSecret} />
+                </>
+              ) : (
+                <>
+                  <LoginField label="Staff ID" placeholder="KE-XXX" value={id} onChange={setId} />
+                  <LoginField label="Password" placeholder="••••••••" type="password" value={secret} onChange={setSecret} />
+                </>
+              )}
+
+              {error && (
+                <p className="text-sm text-destructive font-medium">{error}</p>
+              )}
+
+              <button
+                type="submit"
+                className="w-full bg-scout text-scout-foreground font-semibold rounded-md px-6 py-3 hover:opacity-90 transition"
+              >
+                Sign In
+              </button>
+
+              <p className="text-xs text-muted-foreground text-center">
+                Forgot your PIN? Visit any Ujima branch or dial USSD *3840#
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-muted/60 border-t text-center text-xs text-muted-foreground py-3 px-4">
+        <span className="font-semibold">Demo Mode</span> — Member: UJ-2024-0042 / PIN: 1234 &nbsp;|&nbsp; Officer: KE-047 / officer2024
+      </div>
+    </div>
+  );
+}
+
+function RoleCard({ active, onClick, title, desc }: { active: boolean; onClick: () => void; title: string; desc: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`text-left rounded-xl border-2 p-4 transition-all ${active ? "border-scout bg-scout/5" : "border-border hover:border-muted-foreground/40"}`}
+    >
+      <p className="font-semibold text-sm">{title}</p>
+      <p className="text-xs text-muted-foreground mt-1">{desc}</p>
+    </button>
+  );
+}
+
+function LoginField({ label, value, onChange, type = "text", placeholder, maxLength, inputMode }: {
+  label: string; value: string; onChange: (v: string) => void;
+  type?: string; placeholder?: string; maxLength?: number; inputMode?: "numeric" | "text";
+}) {
+  return (
+    <label className="block">
+      <span className="block text-sm font-medium mb-1.5">{label}</span>
+      <input
+        type={type}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        inputMode={inputMode}
+        className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-scout/30"
+      />
+    </label>
+  );
+}
