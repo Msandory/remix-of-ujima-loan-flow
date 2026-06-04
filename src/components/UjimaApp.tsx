@@ -4,6 +4,8 @@ import {
   FormData, emptyForm, COUNTY_RISK, computeFeatures, rankBoundaries,
   dataQualityScore, computeScoring, tierFrom, nowEAT,
 } from "@/lib/ujima";
+import OfficerDashboard from "./OfficerDashboard";
+
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -87,22 +89,19 @@ export default function UjimaApp() {
     return <LoginScreen onLogin={handleLogin} />;
   }
 
+  if (auth.role === "officer") {
+    return <OfficerDashboard onLogout={logout} />;
+  }
+
+
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {auth.role === "officer" && (
-        <div className="fixed top-3 right-3 z-50 bg-guardian text-guardian-foreground text-xs font-semibold px-3 py-1.5 rounded-full shadow-md flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-guardian-foreground/70" />
-          Logged in as: Officer {auth.id}
-          <button onClick={logout} className="ml-1 opacity-80 hover:opacity-100 underline">Sign out</button>
-        </div>
-      )}
-      {auth.role === "member" && (
-        <div className="fixed top-3 right-3 z-50">
-          <button onClick={logout} className="bg-card border text-xs font-medium px-3 py-1.5 rounded-full shadow-sm hover:bg-muted">
-            Sign out
-          </button>
-        </div>
-      )}
+      <div className="fixed top-3 right-3 z-50">
+        <button onClick={logout} className="bg-card border text-xs font-medium px-3 py-1.5 rounded-full shadow-sm hover:bg-muted">
+          Sign out
+        </button>
+      </div>
+
       {/* Mobile progress */}
       <div className="md:hidden sticky top-0 z-30 bg-card border-b px-4 py-3">
         <div className="flex items-center justify-between gap-2 overflow-x-auto">
