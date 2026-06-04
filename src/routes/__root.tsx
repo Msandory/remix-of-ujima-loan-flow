@@ -79,14 +79,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Ujima Sacco" },
+      { name: "description", content: "Simulates an AI loan approval pipeline for a Kenyan SACCO, demonstrating ethical AI." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Ujima Sacco" },
+      { property: "og:description", content: "Simulates an AI loan approval pipeline for a Kenyan SACCO, demonstrating ethical AI." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Ujima Sacco" },
+      { name: "twitter:description", content: "Simulates an AI loan approval pipeline for a Kenyan SACCO, demonstrating ethical AI." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/PGLg3JxhPHO7W5Cv9IsZn09JQHK2/social-images/social-1780576004164-ujimalogo.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/PGLg3JxhPHO7W5Cv9IsZn09JQHK2/social-images/social-1780576004164-ujimalogo.webp" },
     ],
     links: [
       {
