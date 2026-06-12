@@ -943,3 +943,51 @@ function LoginField({ label, value, onChange, type = "text", placeholder, maxLen
     </label>
   );
 }
+
+function OfficerBriefing({ form, topFactors }: { form: FormData; topFactors: string[] }) {
+  const [briefing, setBriefing] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError("");
+    generateOfficerBriefing({
+      data: {
+        name: form.memberName,
+        loanAmount: form.loanAmount,
+        purpose: form.loanPurpose,
+        county: form.county,
+        monthlyIncome: form.monthlyIncome,
+        contributionMonths: form.contributionMonths,
+        activeLoans: form.activeLoans,
+        children: 0,
+        topFactors: topFactors.slice(0, 2),
+      },
+    })
+      .then(res => { if (!cancelled) setBriefing(res.briefing); })
+      .catch(err => { if (!cancelled) setError(err?.message || "Failed to generate briefing"); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [form, topFactors]);
+
+  return (
+    <div className="border-2 border-hunter rounded-xl p-5 bg-hunter/5">
+      <div className="flex items-center gap-2 mb-3">
+        <Sparkles className="w-5 h-5 text-hunter" />
+        <h3 className="font-bold text-hunter">AI-Generated Officer Briefing — Powered by Claude</h3>
+      </div>
+      {loading ? (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="w-4 h-4 animate-spin text-hunter" />
+          Generating officer briefing…
+        </div>
+      ) : error ? (
+        <p className="text-sm text-destructive">Unable to generate briefing: {error}</p>
+      ) : (
+        <p className="text-sm leading-relaxed whitespace-pre-wrap">{briefing}</p>
+      )}
+    </div>
+  );
+}
