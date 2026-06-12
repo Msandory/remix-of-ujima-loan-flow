@@ -218,7 +218,7 @@ export default function OfficerDashboard({ onLogout, onRedTeamTest }: { onLogout
           )}
           {nav === "approved"  && <Approved rows={approved} count={kpiApprovedWeek} />}
           {nav === "declined"  && <Declined rows={declined} />}
-          {nav === "analytics" && <Analytics />}
+          {nav === "analytics" && <Analytics onRedTeamTest={onRedTeamTest} />}
         </main>
       </div>
 
