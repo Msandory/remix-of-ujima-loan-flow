@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
-import { Check, Loader2, AlertTriangle, ShieldCheck, ShieldAlert, ArrowRight, Smartphone } from "lucide-react";
+import { Check, Loader2, AlertTriangle, ShieldCheck, ShieldAlert, ArrowRight, Smartphone, Sparkles } from "lucide-react";
 import {
   FormData, emptyForm, COUNTY_RISK, computeFeatures, rankBoundaries,
   dataQualityScore, computeScoring, tierFrom, nowEAT,
 } from "@/lib/ujima";
+import { generateOfficerBriefing } from "@/lib/briefing.functions";
 import OfficerDashboard from "./OfficerDashboard";
+
+
 
 
 type Step = 1 | 2 | 3 | 4 | 5;
@@ -32,6 +35,7 @@ export default function UjimaApp() {
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [handoff, setHandoff] = useState<null | { color: string }>(null);
   const [timestamps, setTimestamps] = useState<Record<Step, string>>({} as any);
+  const [redTeamMode, setRedTeamMode] = useState(false);
 
   const handleLogin = (role: "member" | "officer", id: string) => {
     setAuthLoading(true);
@@ -51,6 +55,7 @@ export default function UjimaApp() {
     setErrors({});
     setHandoff(null);
     setTimestamps({ 1: nowEAT() } as any);
+    if (auth?.role === "officer") setRedTeamMode(false);
   };
 
   const logout = () => {
@@ -60,6 +65,7 @@ export default function UjimaApp() {
     setErrors({});
     setHandoff(null);
     setTimestamps({} as any);
+    setRedTeamMode(false);
   };
 
   const startHandoff = (color: string, next: Step) => {
@@ -69,6 +75,27 @@ export default function UjimaApp() {
       setStep(next);
       setHandoff(null);
     }, 1500);
+  };
+
+  const runRedTeamTest = () => {
+    const testForm: FormData = {
+      memberName: "Amina Wekesa",
+      memberId: "UJ-2024-TEST",
+      loanAmount: 22000,
+      loanPurpose: "Business Stock",
+      monthlyIncome: 11000,
+      contributionMonths: 4,
+      activeLoans: 2,
+      guarantors: "0",
+      channel: "USSD",
+      county: "Garissa",
+    };
+    setForm(testForm);
+    setErrors({});
+    setStep(1);
+    setTimestamps({ 1: nowEAT() } as any);
+    setRedTeamMode(true);
+    setTimeout(() => startHandoff("bg-scout", 2), 400);
   };
 
   useEffect(() => {
@@ -89,8 +116,8 @@ export default function UjimaApp() {
     return <LoginScreen onLogin={handleLogin} />;
   }
 
-  if (auth.role === "officer") {
-    return <OfficerDashboard onLogout={logout} />;
+  if (auth.role === "officer" && !redTeamMode) {
+    return <OfficerDashboard onLogout={logout} onRedTeamTest={runRedTeamTest} />;
   }
 
 
@@ -664,6 +691,9 @@ function HunterPanel({ form, onNext }: { form: FormData; onNext: () => void }) {
         <p className="text-sm">Delivering via <span className="font-semibold">{form.channel}</span></p>
       </SectionBlock>
 
+      {tier === "AMBER" && <OfficerBriefing form={form} topFactors={topFactors.map(f => f.name)} />}
+
+
       <SectionBlock active={revealed >= 2} loading={revealed === 1} color="hunter" letter="Y" title="YIELD TO HUMAN">
         {tier === "AMBER"
           ? <p className="text-sm">Loan Officer assigned: <span className="font-semibold">Officer KE-047 — Nairobi Central Branch</span>. Notification sent via WhatsApp. Awaiting acknowledgment… <span className="text-muted-foreground">(4 hour response window)</span></p>
@@ -911,5 +941,53 @@ function LoginField({ label, value, onChange, type = "text", placeholder, maxLen
         className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-scout/30"
       />
     </label>
+  );
+}
+
+function OfficerBriefing({ form, topFactors }: { form: FormData; topFactors: string[] }) {
+  const [briefing, setBriefing] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError("");
+    generateOfficerBriefing({
+      data: {
+        name: form.memberName,
+        loanAmount: form.loanAmount,
+        purpose: form.loanPurpose,
+        county: form.county,
+        monthlyIncome: form.monthlyIncome,
+        contributionMonths: form.contributionMonths,
+        activeLoans: form.activeLoans,
+        children: 0,
+        topFactors: topFactors.slice(0, 2),
+      },
+    })
+      .then(res => { if (!cancelled) setBriefing(res.briefing); })
+      .catch(err => { if (!cancelled) setError(err?.message || "Failed to generate briefing"); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [form, topFactors]);
+
+  return (
+    <div className="border-2 border-hunter rounded-xl p-5 bg-hunter/5">
+      <div className="flex items-center gap-2 mb-3">
+        <Sparkles className="w-5 h-5 text-hunter" />
+        <h3 className="font-bold text-hunter">AI-Generated Officer Briefing — Powered by Claude</h3>
+      </div>
+      {loading ? (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="w-4 h-4 animate-spin text-hunter" />
+          Generating officer briefing…
+        </div>
+      ) : error ? (
+        <p className="text-sm text-destructive">Unable to generate briefing: {error}</p>
+      ) : (
+        <p className="text-sm leading-relaxed whitespace-pre-wrap">{briefing}</p>
+      )}
+    </div>
   );
 }

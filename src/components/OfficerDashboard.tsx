@@ -65,7 +65,7 @@ const ACTIVITY = [
 
 const fmtKES = (n: number) => `KES ${n.toLocaleString()}`;
 
-export default function OfficerDashboard({ onLogout }: { onLogout: () => void }) {
+export default function OfficerDashboard({ onLogout, onRedTeamTest }: { onLogout: () => void; onRedTeamTest?: () => void }) {
   const [nav, setNav] = useState<Nav>("overview");
   const [pending, setPending] = useState<PendingApp[]>(INITIAL_PENDING);
   const [approved, setApproved] = useState<ApprovedApp[]>(INITIAL_APPROVED);
@@ -218,7 +218,7 @@ export default function OfficerDashboard({ onLogout }: { onLogout: () => void })
           )}
           {nav === "approved"  && <Approved rows={approved} count={kpiApprovedWeek} />}
           {nav === "declined"  && <Declined rows={declined} />}
-          {nav === "analytics" && <Analytics />}
+          {nav === "analytics" && <Analytics onRedTeamTest={onRedTeamTest} />}
         </main>
       </div>
 
@@ -560,7 +560,7 @@ function Declined({ rows }: { rows: DeclinedApp[] }) {
 
 /* ===================== Analytics ===================== */
 
-function Analytics() {
+function Analytics({ onRedTeamTest }: { onRedTeamTest?: () => void }) {
   const daily = [
     { day: "Mon", value: 11 }, { day: "Tue", value: 9 }, { day: "Wed", value: 14 },
     { day: "Thu", value: 17 }, { day: "Fri", value: 8 },
@@ -600,9 +600,21 @@ function Analytics() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-xl font-bold">Analytics</h3>
-        <p className="text-sm text-muted-foreground">Operational performance and fairness monitoring.</p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h3 className="text-xl font-bold">Analytics</h3>
+          <p className="text-sm text-muted-foreground">Operational performance and fairness monitoring.</p>
+        </div>
+        {onRedTeamTest && (
+          <button
+            onClick={onRedTeamTest}
+            className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-2 rounded-md border-2 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground transition"
+            style={{ borderColor: "var(--guard)", color: "var(--guard)" }}
+          >
+            <ShieldAlert className="w-4 h-4" />
+            Run GUARD Red Team Test
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
