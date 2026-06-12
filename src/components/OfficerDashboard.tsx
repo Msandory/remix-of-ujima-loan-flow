@@ -65,7 +65,7 @@ const ACTIVITY = [
 
 const fmtKES = (n: number) => `KES ${n.toLocaleString()}`;
 
-export default function OfficerDashboard({ onLogout }: { onLogout: () => void }) {
+export default function OfficerDashboard({ onLogout, onRedTeamTest }: { onLogout: () => void; onRedTeamTest?: () => void }) {
   const [nav, setNav] = useState<Nav>("overview");
   const [pending, setPending] = useState<PendingApp[]>(INITIAL_PENDING);
   const [approved, setApproved] = useState<ApprovedApp[]>(INITIAL_APPROVED);
