@@ -691,6 +691,9 @@ function HunterPanel({ form, onNext }: { form: FormData; onNext: () => void }) {
         <p className="text-sm">Delivering via <span className="font-semibold">{form.channel}</span></p>
       </SectionBlock>
 
+      {tier === "AMBER" && <OfficerBriefing form={form} topFactors={topFactors.map(f => f.name)} />}
+
+
       <SectionBlock active={revealed >= 2} loading={revealed === 1} color="hunter" letter="Y" title="YIELD TO HUMAN">
         {tier === "AMBER"
           ? <p className="text-sm">Loan Officer assigned: <span className="font-semibold">Officer KE-047 — Nairobi Central Branch</span>. Notification sent via WhatsApp. Awaiting acknowledgment… <span className="text-muted-foreground">(4 hour response window)</span></p>
