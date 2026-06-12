@@ -35,6 +35,7 @@ export default function UjimaApp() {
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [handoff, setHandoff] = useState<null | { color: string }>(null);
   const [timestamps, setTimestamps] = useState<Record<Step, string>>({} as any);
+  const [redTeamMode, setRedTeamMode] = useState(false);
 
   const handleLogin = (role: "member" | "officer", id: string) => {
     setAuthLoading(true);
@@ -54,6 +55,7 @@ export default function UjimaApp() {
     setErrors({});
     setHandoff(null);
     setTimestamps({ 1: nowEAT() } as any);
+    if (auth?.role === "officer") setRedTeamMode(false);
   };
 
   const logout = () => {
@@ -63,6 +65,7 @@ export default function UjimaApp() {
     setErrors({});
     setHandoff(null);
     setTimestamps({} as any);
+    setRedTeamMode(false);
   };
 
   const startHandoff = (color: string, next: Step) => {
@@ -72,6 +75,27 @@ export default function UjimaApp() {
       setStep(next);
       setHandoff(null);
     }, 1500);
+  };
+
+  const runRedTeamTest = () => {
+    const testForm: FormData = {
+      memberName: "Amina Wekesa",
+      memberId: "UJ-2024-TEST",
+      loanAmount: 22000,
+      loanPurpose: "Business Stock",
+      monthlyIncome: 11000,
+      contributionMonths: 4,
+      activeLoans: 2,
+      guarantors: "0",
+      channel: "USSD",
+      county: "Garissa",
+    };
+    setForm(testForm);
+    setErrors({});
+    setStep(1);
+    setTimestamps({ 1: nowEAT() } as any);
+    setRedTeamMode(true);
+    setTimeout(() => startHandoff("bg-scout", 2), 400);
   };
 
   useEffect(() => {
@@ -92,8 +116,8 @@ export default function UjimaApp() {
     return <LoginScreen onLogin={handleLogin} />;
   }
 
-  if (auth.role === "officer") {
-    return <OfficerDashboard onLogout={logout} />;
+  if (auth.role === "officer" && !redTeamMode) {
+    return <OfficerDashboard onLogout={logout} onRedTeamTest={runRedTeamTest} />;
   }
 
 
