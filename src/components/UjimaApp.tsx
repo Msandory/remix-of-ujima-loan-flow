@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
-import { Check, Loader2, AlertTriangle, ShieldCheck, ShieldAlert, ArrowRight, Smartphone } from "lucide-react";
+import { Check, Loader2, AlertTriangle, ShieldCheck, ShieldAlert, ArrowRight, Smartphone, Sparkles } from "lucide-react";
 import {
   FormData, emptyForm, COUNTY_RISK, computeFeatures, rankBoundaries,
   dataQualityScore, computeScoring, tierFrom, nowEAT,
 } from "@/lib/ujima";
+import { generateOfficerBriefing } from "@/lib/briefing.functions";
 import OfficerDashboard from "./OfficerDashboard";
+
+
 
 
 type Step = 1 | 2 | 3 | 4 | 5;
